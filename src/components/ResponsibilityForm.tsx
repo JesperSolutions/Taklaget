@@ -40,16 +40,6 @@ export const ResponsibilityForm: React.FC<ResponsibilityFormProps> = ({ data, on
     }
   };
 
-  const getStatusText = (status: ResponsibilityItem['status']) => {
-    switch (status) {
-      case 'completed':
-        return 'Afsluttet';
-      case 'in-progress':
-        return 'I gang';
-      default:
-        return 'Afventer';
-    }
-  };
 
   return (
     <div className="form-section">

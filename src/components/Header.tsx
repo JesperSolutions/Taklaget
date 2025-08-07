@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, FileText, Download, Upload, Printer } from 'lucide-react';
+import { Building2, Download, Upload, Printer } from 'lucide-react';
 
 interface HeaderProps {
   onExport: () => void;

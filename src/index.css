@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --taklaget-primary: #1e40af;
+  --taklaget-primary-dark: #1e3a8a;
+  --taklaget-secondary: #64748b;
+  --taklaget-accent: #f59e0b;
+  --taklaget-success: #10b981;
+  --taklaget-warning: #f59e0b;
+  --taklaget-error: #ef4444;
+  --taklaget-gray-50: #f8fafc;
+  --taklaget-gray-100: #f1f5f9;
+  --taklaget-gray-200: #e2e8f0;
+  --taklaget-gray-300: #cbd5e1;
+  --taklaget-gray-400: #94a3b8;
+  --taklaget-gray-500: #64748b;
+  --taklaget-gray-600: #475569;
+  --taklaget-gray-700: #334155;
+  --taklaget-gray-800: #1e293b;
+  --taklaget-gray-900: #0f172a;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-900 font-medium py-2 px-4 rounded-lg transition-colors;
+  }
+  
+  .card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+  }
+  
+  .form-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  }
+  
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+}

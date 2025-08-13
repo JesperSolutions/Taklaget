@@ -7,6 +7,9 @@ export default {
   theme: {
     extend: {
       colors: {
+        background: 'var(--taklaget-gray-50)',
+        foreground: 'var(--taklaget-gray-900)',
+        border: 'var(--taklaget-gray-200)',
         taklaget: {
           primary: 'var(--taklaget-primary)',
           'primary-dark': 'var(--taklaget-primary-dark)',

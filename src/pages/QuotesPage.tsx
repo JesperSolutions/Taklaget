@@ -189,7 +189,6 @@ export default function QuotesPage() {
                       ))}
                       {quote.lineItems.length > 3 && (
                         <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
-                </div>
                           +{quote.lineItems.length - 3} more
                         </span>
                       )}

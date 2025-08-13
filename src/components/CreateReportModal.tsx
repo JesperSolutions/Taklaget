@@ -24,6 +24,7 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
     customerPhone: '',
     customerAddress: '',
     address: '',
+    postalCode: '',
     contactPerson: '',
     phone: '',
     email: '',
@@ -58,9 +59,9 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
   });
 
   const tabs = [
-    { id: 'building', name: 'Bygning & Kontakt', icon: '🏢' },
-    { id: 'checklist', name: 'Check Liste', icon: '✅' },
-    { id: 'assessment', name: 'Vurdering', icon: '📋' },
+    { id: 'building', name: 'Building & Contact', icon: '🏢' },
+    { id: 'checklist', name: 'Check List', icon: '✅' },
+    { id: 'assessment', name: 'Assessment', icon: '📋' },
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -79,6 +80,7 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
           address: formData.customerAddress,
         },
         address: formData.address,
+        postalCode: formData.postalCode,
         contactPerson: formData.contactPerson,
         phone: formData.phone,
         email: formData.email,
@@ -137,11 +139,11 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
   const renderBuildingTab = () => (
     <div className="space-y-6">
       <div>
-        <h4 className="text-lg font-medium text-gray-900 mb-4">BYGNING & KONTAKTPERSONER</h4>
+        <h4 className="text-lg font-medium text-gray-900 mb-4">BUILDING & CONTACT PERSONS</h4>
         
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
-            <label className="form-label">Bygherre</label>
+            <label className="form-label">Building Owner</label>
             <input
               type="text"
               className="form-input"
@@ -152,7 +154,7 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
           </div>
 
           <div>
-            <label className="form-label">Kontakt person</label>
+            <label className="form-label">Contact Person</label>
             <input
               type="text"
               className="form-input"
@@ -165,7 +167,7 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
 
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
-            <label className="form-label">Adresse</label>
+            <label className="form-label">Address</label>
             <input
               type="text"
               className="form-input"
@@ -176,7 +178,20 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
           </div>
 
           <div>
-            <label className="form-label">Telefon</label>
+            <label className="form-label">Postal Code</label>
+            <input
+              type="text"
+              className="form-input"
+              value={formData.postalCode}
+              onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
+            />
+            {errors.postalCode && <p className="mt-1 text-sm text-red-600">{errors.postalCode}</p>}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div>
+            <label className="form-label">Phone</label>
             <input
               type="tel"
               className="form-input"
@@ -185,26 +200,26 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
             />
             {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
           </div>
-        </div>
 
-        <div className="mb-6">
-          <label className="form-label">E-mail</label>
-          <input
-            type="email"
-            className="form-input"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          />
-          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+          <div>
+            <label className="form-label">Email</label>
+            <input
+              type="email"
+              className="form-input"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            />
+            {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+          </div>
         </div>
       </div>
 
       <div>
-        <h4 className="text-lg font-medium text-gray-900 mb-4">AGRITECTUM KONTAKT</h4>
+        <h4 className="text-lg font-medium text-gray-900 mb-4">COMPANY CONTACT</h4>
         
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="form-label">Kontakt</label>
+            <label className="form-label">Contact</label>
             <input
               type="text"
               className="form-input"
@@ -215,7 +230,7 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
           </div>
 
           <div>
-            <label className="form-label">Telefon</label>
+            <label className="form-label">Phone</label>
             <input
               type="tel"
               className="form-input"
@@ -227,7 +242,7 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
         </div>
 
         <div>
-          <label className="form-label">E-mail</label>
+          <label className="form-label">Email</label>
           <input
             type="email"
             className="form-input"
@@ -242,29 +257,29 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
 
   const renderChecklistTab = () => (
     <div className="space-y-6">
-      <h4 className="text-lg font-medium text-gray-900 mb-4">CHECK LISTE</h4>
+      <h4 className="text-lg font-medium text-gray-900 mb-4">CHECK LIST</h4>
       
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div>
-          <label className="form-label">Tag materiale</label>
+          <label className="form-label">Roof Material</label>
           <select
             className="form-input"
             value={formData.roofType}
             onChange={(e) => setFormData({ ...formData, roofType: e.target.value })}
           >
-            <option value="">Vælg tag type</option>
-            <option value="Tagpap">Tagpap</option>
-            <option value="Tegl tag">Tegl tag</option>
-            <option value="Beton tag">Beton tag</option>
-            <option value="Metal tag">Metal tag</option>
-            <option value="Stråtag">Stråtag</option>
-            <option value="Fladt tag">Fladt tag</option>
+            <option value="">Select roof type</option>
+            <option value="Roofing Felt">Roofing Felt</option>
+            <option value="Tile Roof">Tile Roof</option>
+            <option value="Concrete Roof">Concrete Roof</option>
+            <option value="Metal Roof">Metal Roof</option>
+            <option value="Thatched Roof">Thatched Roof</option>
+            <option value="Flat Roof">Flat Roof</option>
           </select>
           {errors.roofType && <p className="mt-1 text-sm text-red-600">{errors.roofType}</p>}
         </div>
 
         <div>
-          <label className="form-label">Areal (m²)</label>
+          <label className="form-label">Area (m²)</label>
           <input
             type="number"
             min="0"
@@ -278,24 +293,24 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
 
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div>
-          <label className="form-label">Alder på tag</label>
+          <label className="form-label">Roof Age</label>
           <input
             type="text"
             className="form-input"
             value={formData.roofAge}
             onChange={(e) => setFormData({ ...formData, roofAge: e.target.value })}
-            placeholder="f.eks. 10 år"
+            placeholder="e.g. 10 years"
           />
         </div>
 
         <div>
-          <label className="form-label">Adgangsforhold</label>
+          <label className="form-label">Access Conditions</label>
           <input
             type="text"
             className="form-input"
             value={formData.accessConditions}
             onChange={(e) => setFormData({ ...formData, accessConditions: e.target.value })}
-            placeholder="f.eks. Adgang med lang stige"
+            placeholder="e.g. Access with long ladder"
           />
           {errors.accessConditions && <p className="mt-1 text-sm text-red-600">{errors.accessConditions}</p>}
         </div>
@@ -311,7 +326,7 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
             onChange={(e) => setFormData({ ...formData, fallProtection: e.target.checked })}
           />
           <label htmlFor="fallProtection" className="ml-2 block text-sm text-gray-900">
-            Faldsikring / rækværk etableret
+            Fall protection / railing established
           </label>
         </div>
 
@@ -324,7 +339,7 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
             onChange={(e) => setFormData({ ...formData, greenRoof: e.target.checked })}
           />
           <label htmlFor="greenRoof" className="ml-2 block text-sm text-gray-900">
-            Grønt tag
+            Green roof
           </label>
         </div>
 
@@ -337,19 +352,19 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
             onChange={(e) => setFormData({ ...formData, solarPanels: e.target.checked })}
           />
           <label htmlFor="solarPanels" className="ml-2 block text-sm text-gray-900">
-            Solceller
+            Solar panels
           </label>
         </div>
 
         {formData.solarPanels && (
           <div className="ml-6">
-            <label className="form-label">Beskrivelse af solceller</label>
+            <label className="form-label">Solar panels description</label>
             <input
               type="text"
               className="form-input"
               value={formData.solarPanelsDescription}
               onChange={(e) => setFormData({ ...formData, solarPanelsDescription: e.target.value })}
-              placeholder="f.eks. 2 mindre områder, limet løsning"
+              placeholder="e.g. 2 smaller areas, adhesive solution"
             />
           </div>
         )}
@@ -376,7 +391,7 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
             onChange={(e) => setFormData({ ...formData, rainwaterCollection: e.target.checked })}
           />
           <label htmlFor="rainwaterCollection" className="ml-2 block text-sm text-gray-900">
-            Regnvandsopsamling
+            Rainwater collection
           </label>
         </div>
 
@@ -389,32 +404,32 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
             onChange={(e) => setFormData({ ...formData, recreationalAreas: e.target.checked })}
           />
           <label htmlFor="recreationalAreas" className="ml-2 block text-sm text-gray-900">
-            Rekreative områder
+            Recreational areas
           </label>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="form-label">Tekniske udførelse</label>
+          <label className="form-label">Technical execution</label>
           <input
             type="text"
             className="form-input"
             value={formData.technicalExecution}
             onChange={(e) => setFormData({ ...formData, technicalExecution: e.target.value })}
-            placeholder="f.eks. OK"
+            placeholder="e.g. OK"
           />
           {errors.technicalExecution && <p className="mt-1 text-sm text-red-600">{errors.technicalExecution}</p>}
         </div>
 
         <div>
-          <label className="form-label">Afløb</label>
+          <label className="form-label">Drainage</label>
           <input
             type="text"
             className="form-input"
             value={formData.drainage}
             onChange={(e) => setFormData({ ...formData, drainage: e.target.value })}
-            placeholder="f.eks. UV tagbrønde"
+            placeholder="e.g. UV roof drains"
           />
           {errors.drainage && <p className="mt-1 text-sm text-red-600">{errors.drainage}</p>}
         </div>
@@ -422,25 +437,25 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="form-label">Opkanter og murkroner</label>
+          <label className="form-label">Edges and parapets</label>
           <input
             type="text"
             className="form-input"
             value={formData.edges}
             onChange={(e) => setFormData({ ...formData, edges: e.target.value })}
-            placeholder="f.eks. OK"
+            placeholder="e.g. OK"
           />
           {errors.edges && <p className="mt-1 text-sm text-red-600">{errors.edges}</p>}
         </div>
 
         <div>
-          <label className="form-label">Ovenlys</label>
+          <label className="form-label">Skylights</label>
           <input
             type="text"
             className="form-input"
             value={formData.skylights}
             onChange={(e) => setFormData({ ...formData, skylights: e.target.value })}
-            placeholder="f.eks. Et enkelt OK"
+            placeholder="e.g. Single unit OK"
           />
           {errors.skylights && <p className="mt-1 text-sm text-red-600">{errors.skylights}</p>}
         </div>
@@ -448,25 +463,25 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="form-label">Tekniske installationer</label>
+          <label className="form-label">Technical installations</label>
           <input
             type="text"
             className="form-input"
             value={formData.technicalInstallations}
             onChange={(e) => setFormData({ ...formData, technicalInstallations: e.target.value })}
-            placeholder="f.eks. OK"
+            placeholder="e.g. OK"
           />
           {errors.technicalInstallations && <p className="mt-1 text-sm text-red-600">{errors.technicalInstallations}</p>}
         </div>
 
         <div>
-          <label className="form-label">Isoleringstype</label>
+          <label className="form-label">Insulation type</label>
           <input
             type="text"
             className="form-input"
             value={formData.insulationType}
             onChange={(e) => setFormData({ ...formData, insulationType: e.target.value })}
-            placeholder="f.eks. EPS og Mineraluld"
+            placeholder="e.g. EPS and Mineral Wool"
           />
           {errors.insulationType && <p className="mt-1 text-sm text-red-600">{errors.insulationType}</p>}
         </div>
@@ -477,37 +492,37 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
   const renderAssessmentTab = () => (
     <div className="space-y-6">
       <div>
-        <label className="form-label">Dokumentation / Findings</label>
+        <label className="form-label">Documentation / Findings</label>
         <textarea
           rows={4}
           className="form-input"
           value={formData.findings}
           onChange={(e) => setFormData({ ...formData, findings: e.target.value })}
-          placeholder="Beskriv hvad der blev fundet under inspektionen..."
+          placeholder="Describe what was found during the inspection..."
         />
         {errors.findings && <p className="mt-1 text-sm text-red-600">{errors.findings}</p>}
       </div>
 
       <div>
-        <label className="form-label">Anbefalinger</label>
+        <label className="form-label">Recommendations</label>
         <textarea
           rows={6}
           className="form-input"
           value={formData.recommendations}
           onChange={(e) => setFormData({ ...formData, recommendations: e.target.value })}
-          placeholder="1. Første anbefaling...&#10;2. Anden anbefaling...&#10;3. Tredje anbefaling..."
+          placeholder="1. First recommendation...&#10;2. Second recommendation...&#10;3. Third recommendation..."
         />
         {errors.recommendations && <p className="mt-1 text-sm text-red-600">{errors.recommendations}</p>}
       </div>
 
       <div>
-        <label className="form-label">Økonomi</label>
+        <label className="form-label">Economic Assessment</label>
         <textarea
           rows={3}
           className="form-input"
           value={formData.economicAssessment}
           onChange={(e) => setFormData({ ...formData, economicAssessment: e.target.value })}
-          placeholder="Økonomisk vurdering og estimater..."
+          placeholder="Economic assessment and estimates..."
         />
       </div>
     </div>
@@ -521,7 +536,7 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
         <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
           <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-900">Opret Synsrapport</h3>
+              <h3 className="text-lg font-medium text-gray-900">Create Inspection Report</h3>
               <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
                 <X className="h-6 w-6" />
               </button>
@@ -573,7 +588,7 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
                       }}
                       className="btn-secondary"
                     >
-                      Forrige
+                      Previous
                     </button>
                   )}
                   {currentTab !== 'assessment' && (
@@ -587,7 +602,7 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
                       }}
                       className="btn-secondary"
                     >
-                      Næste
+                      Next
                     </button>
                   )}
                 </div>
@@ -598,14 +613,14 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
                     onClick={onClose}
                     className="btn-secondary"
                   >
-                    Annuller
+                    Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
                     className="btn-primary"
                   >
-                    {loading ? 'Opretter...' : 'Opret Rapport'}
+                    {loading ? 'Creating...' : 'Create Report'}
                   </button>
                 </div>
               </div>

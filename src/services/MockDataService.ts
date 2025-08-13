@@ -147,6 +147,7 @@ export class MockDataService implements DataService {
       rooferId,
       customer: { ...data.customer, id: this.generateId() },
       address: data.address,
+      postalCode: data.postalCode,
       contactPerson: data.contactPerson,
       phone: data.phone,
       email: data.email,

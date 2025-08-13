@@ -45,6 +45,7 @@ export interface InspectionReport {
   rooferId: string;
   customer: Customer;
   address: string;
+  postalCode: string;
   contactPerson: string;
   phone: string;
   email: string;
@@ -116,6 +117,7 @@ export interface ApiToken {
 export interface InspectionReportInput {
   customer: Omit<Customer, 'id'>;
   address: string;
+  postalCode: string;
   contactPerson: string;
   phone: string;
   email: string;

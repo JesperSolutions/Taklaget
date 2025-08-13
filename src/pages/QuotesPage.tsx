@@ -179,7 +179,6 @@ export default function QuotesPage() {
                         <Download className="h-4 w-4" />
                       </button>
                     </div>
-                    </div>
                   </div>
                   <div className="mt-2">
                     <div className="flex flex-wrap gap-2">
@@ -190,6 +189,7 @@ export default function QuotesPage() {
                       ))}
                       {quote.lineItems.length > 3 && (
                         <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+                </div>
                           +{quote.lineItems.length - 3} more
                         </span>
                       )}

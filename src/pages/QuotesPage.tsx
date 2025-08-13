@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useData } from '../contexts/DataContext';
 import { Quote } from '../shared/types';
-import { Plus, Calculator, Eye, Edit } from 'lucide-react';
+import { Plus, Calculator, Eye, Edit, Mail, Download } from 'lucide-react';
 import CreateQuoteModal from '../components/CreateQuoteModal';
+import EmailModal from '../components/EmailModal';
+import { MockEmailService } from '../services/EmailService';
 
 export default function QuotesPage() {
   const { user } = useAuth();
@@ -11,6 +13,9 @@ export default function QuotesPage() {
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
+  const emailService = new MockEmailService();
 
   useEffect(() => {
     const loadQuotes = async () => {
@@ -48,6 +53,22 @@ export default function QuotesPage() {
   const handleQuoteCreated = (newQuote: Quote) => {
     setQuotes(prev => [newQuote, ...prev]);
     setShowCreateModal(false);
+  };
+
+  const handleSendEmail = (quote: Quote) => {
+    setSelectedQuote(quote);
+    setShowEmailModal(true);
+  };
+
+  const handleEmailSend = async (email: string, subject: string, message: string) => {
+    if (!selectedQuote) return;
+    await emailService.sendQuoteEmail(selectedQuote.id, email, subject);
+    alert('Quote sent successfully!');
+  };
+
+  const handleDownloadPDF = (quote: Quote) => {
+    console.log('Downloading PDF for quote:', quote.id);
+    alert('PDF download functionality will be implemented with a PDF generation service.');
   };
 
   const getStatusColor = (status: string) => {
@@ -143,6 +164,21 @@ export default function QuotesPage() {
                       <button className="p-2 text-gray-400 hover:text-gray-600">
                         <Edit className="h-4 w-4" />
                       </button>
+                      <button 
+                        onClick={() => handleSendEmail(quote)}
+                        className="p-2 text-gray-400 hover:text-blue-600"
+                        title="Send by email"
+                      >
+                        <Mail className="h-4 w-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleDownloadPDF(quote)}
+                        className="p-2 text-gray-400 hover:text-green-600"
+                        title="Download PDF"
+                      >
+                        <Download className="h-4 w-4" />
+                      </button>
+                    </div>
                     </div>
                   </div>
                   <div className="mt-2">
@@ -170,6 +206,20 @@ export default function QuotesPage() {
         <CreateQuoteModal
           onClose={() => setShowCreateModal(false)}
           onQuoteCreated={handleQuoteCreated}
+        />
+      )}
+
+      {showEmailModal && selectedQuote && (
+        <EmailModal
+          isOpen={showEmailModal}
+          onClose={() => {
+            setShowEmailModal(false);
+            setSelectedQuote(null);
+          }}
+          onSend={handleEmailSend}
+          defaultEmail={selectedQuote.customer.email}
+          defaultSubject={`Quote - ${selectedQuote.customer.name}`}
+          type="quote"
         />
       )}
     </div>

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useData } from '../contexts/DataContext';
 import { InspectionReport } from '../shared/types';
-import { Plus, FileText, Eye, Edit } from 'lucide-react';
+import { Plus, FileText, Eye, Edit, Mail, Download } from 'lucide-react';
 import CreateReportModal from '../components/CreateReportModal';
+import EmailModal from '../components/EmailModal';
+import { MockEmailService } from '../services/EmailService';
 
 export default function ReportsPage() {
   const { user } = useAuth();
@@ -11,6 +13,9 @@ export default function ReportsPage() {
   const [reports, setReports] = useState<InspectionReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<InspectionReport | null>(null);
+  const emailService = new MockEmailService();
 
   useEffect(() => {
     const loadReports = async () => {
@@ -48,6 +53,23 @@ export default function ReportsPage() {
   const handleReportCreated = (newReport: InspectionReport) => {
     setReports(prev => [newReport, ...prev]);
     setShowCreateModal(false);
+  };
+
+  const handleSendEmail = (report: InspectionReport) => {
+    setSelectedReport(report);
+    setShowEmailModal(true);
+  };
+
+  const handleEmailSend = async (email: string, subject: string, message: string) => {
+    if (!selectedReport) return;
+    await emailService.sendReportEmail(selectedReport.id, email, subject);
+    alert('Report sent successfully!');
+  };
+
+  const handleDownloadPDF = (report: InspectionReport) => {
+    // In production, this would generate and download a PDF
+    console.log('Downloading PDF for report:', report.id);
+    alert('PDF download functionality will be implemented with a PDF generation service.');
   };
 
   const getStatusColor = (status: string) => {
@@ -141,6 +163,20 @@ export default function ReportsPage() {
                       <button className="p-2 text-gray-400 hover:text-gray-600">
                         <Edit className="h-4 w-4" />
                       </button>
+                      <button 
+                        onClick={() => handleSendEmail(report)}
+                        className="p-2 text-gray-400 hover:text-blue-600"
+                        title="Send by email"
+                      >
+                        <Mail className="h-4 w-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleDownloadPDF(report)}
+                        className="p-2 text-gray-400 hover:text-green-600"
+                        title="Download PDF"
+                      >
+                        <Download className="h-4 w-4" />
+                      </button>
                     </div>
                   </div>
                   {report.findings && (
@@ -159,6 +195,20 @@ export default function ReportsPage() {
         <CreateReportModal
           onClose={() => setShowCreateModal(false)}
           onReportCreated={handleReportCreated}
+        />
+      )}
+
+      {showEmailModal && selectedReport && (
+        <EmailModal
+          isOpen={showEmailModal}
+          onClose={() => {
+            setShowEmailModal(false);
+            setSelectedReport(null);
+          }}
+          onSend={handleEmailSend}
+          defaultEmail={selectedReport.customer.email}
+          defaultSubject={`Inspection Report - ${selectedReport.customer.name}`}
+          type="report"
         />
       )}
     </div>

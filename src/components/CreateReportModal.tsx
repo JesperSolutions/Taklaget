@@ -4,7 +4,8 @@ import { useData } from '../contexts/DataContext';
 import { InspectionReport } from '../shared/types';
 import { InspectionReportInputSchema } from '../shared/schemas';
 import { ZodError } from 'zod';
-import { X } from 'lucide-react';
+import { X, Camera } from 'lucide-react';
+import PhotoUpload from './PhotoUpload';
 
 interface CreateReportModalProps {
   onClose: () => void;
@@ -55,7 +56,7 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
     findings: '',
     recommendations: '',
     economicAssessment: '',
-    photos: [] as string[],
+    photos: [],
   });
 
   const tabs = [
@@ -107,7 +108,7 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
         findings: formData.findings,
         recommendations: formData.recommendations,
         economicAssessment: formData.economicAssessment,
-        photos: formData.photos,
+        photos: formData.photos || [],
       };
 
       const validatedData = InspectionReportInputSchema.parse(reportData);
@@ -523,6 +524,14 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
           value={formData.economicAssessment}
           onChange={(e) => setFormData({ ...formData, economicAssessment: e.target.value })}
           placeholder="Economic assessment and estimates..."
+        />
+      </div>
+
+      <div>
+        <PhotoUpload
+          photos={formData.photos}
+          onPhotosChange={(photos) => setFormData({ ...formData, photos })}
+          maxPhotos={10}
         />
       </div>
     </div>

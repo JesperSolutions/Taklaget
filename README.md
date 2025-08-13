@@ -28,9 +28,12 @@ A TypeScript React application for roof inspection and quote management, built w
 
 ## Architecture
 
-- **Frontend**: React + Vite + TypeScript + TailwindCSS
-- **Data Layer**: Mock service with Firebase-ready interface
-- **Authentication**: Mock authentication (Firebase Auth ready)
+- **Frontend**: React + Vite + TypeScript + TailwindCSS  
+- **Backend**: Firebase (Firestore + Storage + Auth)
+- **Data Layer**: Firebase service with mock fallback
+- **Authentication**: Firebase Auth with role-based access
+- **File Storage**: Firebase Storage for photos
+- **Email Service**: Configurable email service (mock/production)
 - **State Management**: React Context
 - **Validation**: Zod schemas
 - **UI Components**: Custom components with Lucide React icons
@@ -45,17 +48,27 @@ A TypeScript React application for roof inspection and quote management, built w
 ### Installation
 
 1. Clone the repository
-2. Install dependencies:
+2. Copy environment variables:
+   ```bash
+   cp .env.example .env
+   ```
+   
+3. Configure Firebase:
+   - Create a Firebase project
+   - Enable Authentication, Firestore, and Storage
+   - Add your Firebase config to `.env`
+
+4. Install dependencies:
    ```bash
    npm install
    ```
 
-3. Start the development server:
+5. Start the development server:
    ```bash
    npm run dev
    ```
 
-4. Open your browser to `http://localhost:5173`
+6. Open your browser to `http://localhost:5173`
 
 ### Demo Users
 
@@ -109,20 +122,39 @@ Currently implemented with `MockDataService` for development. Ready for `Firebas
 
 ## Firebase Integration (Future)
 
-To integrate with Firebase:
+## Firebase Integration
 
-1. Install Firebase SDK:
-   ```bash
-   npm install firebase
-   ```
+The application is now Firebase-ready with:
 
-2. Create `FirebaseDataService` implementing the same `DataService` interface
+### 🔥 **Firebase Services Implemented:**
+- **Authentication**: Email/password with role-based access
+- **Firestore**: Document-based data storage
+- **Storage**: Photo upload and management
+- **Security Rules**: Role-based data access
 
-3. Update the data provider in `src/contexts/DataContext.tsx`
+### 📁 **File Structure:**
+```
+src/
+├── config/firebase.ts          # Firebase configuration
+├── services/
+│   ├── FirebaseDataService.ts  # Production data service
+│   ├── FirebaseAuthService.ts  # Production auth service
+│   ├── MockDataService.ts      # Development fallback
+│   └── EmailService.ts         # Email functionality
+```
 
-4. Configure Firebase Auth in the auth service
+### 🔄 **Switching to Firebase:**
+1. Configure environment variables in `.env`
+2. Update `src/contexts/DataContext.tsx` to use `FirebaseDataService`
+3. Update `src/contexts/AuthContext.tsx` to use `FirebaseAuthService`
+4. Deploy Firestore security rules
+5. Set up Firebase Storage rules
 
-5. Set up Firestore security rules matching the RBAC model
+### 📧 **Email Integration:**
+- Mock email service for development
+- Firebase Cloud Functions ready for production
+- PDF generation hooks included
+- Customer email integration
 
 ## Role-Based Access Control
 
@@ -166,10 +198,11 @@ To integrate with Firebase:
 
 1. Define types in `src/shared/types.ts`
 2. Add validation schemas in `src/shared/schemas.ts`
-3. Extend the `DataService` interface
-4. Implement in `MockDataService`
+3. Extend the `DataService` interface  
+4. Implement in both `MockDataService` and `FirebaseDataService`
 5. Create UI components and pages
 6. Add proper RBAC checks
+7. Add email/PDF functionality if needed
 
 ## Deployment
 
@@ -180,6 +213,17 @@ npm run build
 ```
 
 The `dist` folder contains the production build.
+
+### Firebase Deployment
+
+For Firebase Hosting:
+```bash
+npm install -g firebase-tools
+firebase login
+firebase init hosting
+npm run build
+firebase deploy
+```
 
 ## Contributing
 

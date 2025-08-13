@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useData } from '../contexts/DataContext';
 import { InspectionReport } from '../shared/types';
-import { Plus, FileText, Eye, Edit, Mail, Download } from 'lucide-react';
+import { Plus, FileText, Eye, Edit, Mail, Download, Trash2 } from 'lucide-react';
 import CreateReportModal from '../components/CreateReportModal';
 import EmailModal from '../components/EmailModal';
 import { MockEmailService } from '../services/EmailService';
@@ -70,6 +70,19 @@ export default function ReportsPage() {
     // In production, this would generate and download a PDF
     console.log('Downloading PDF for report:', report.id);
     alert('PDF download functionality will be implemented with a PDF generation service.');
+  };
+
+  const handleDeleteReport = async (report: InspectionReport) => {
+    if (confirm(`Are you sure you want to delete the report for ${report.customer.name}?`)) {
+      try {
+        // In a real implementation, you'd call dataService.deleteReport(report.id)
+        setReports(prev => prev.filter(r => r.id !== report.id));
+        alert('Report deleted successfully');
+      } catch (error) {
+        console.error('Error deleting report:', error);
+        alert('Failed to delete report');
+      }
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -176,6 +189,13 @@ export default function ReportsPage() {
                         title="Download PDF"
                       >
                         <Download className="h-4 w-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteReport(report)}
+                        className="p-2 text-gray-400 hover:text-red-600"
+                        title="Delete report"
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   </div>

@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
 import { Organization } from '../shared/types';
 import { Plus, Building2, Edit, Users } from 'lucide-react';
+import CreateOrganizationModal from '../components/CreateOrganizationModal';
+import EditOrganizationModal from '../components/EditOrganizationModal';
 
 export default function OrganizationsPage() {
+  const navigate = useNavigate();
   const { dataService } = useData();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedOrganization, setSelectedOrganization] = useState<Organization | null>(null);
 
   useEffect(() => {
     const loadOrganizations = async () => {
@@ -23,6 +30,29 @@ export default function OrganizationsPage() {
     loadOrganizations();
   }, [dataService]);
 
+  const handleOrganizationCreated = (newOrganization: Organization) => {
+    setOrganizations(prev => [newOrganization, ...prev]);
+    setShowCreateModal(false);
+  };
+
+  const handleOrganizationUpdated = (updatedOrganization: Organization) => {
+    setOrganizations(prev => 
+      prev.map(org => org.id === updatedOrganization.id ? updatedOrganization : org)
+    );
+    setShowEditModal(false);
+    setSelectedOrganization(null);
+  };
+
+  const handleEditOrganization = (organization: Organization) => {
+    setSelectedOrganization(organization);
+    setShowEditModal(true);
+  };
+
+  const handleViewUsers = (organization: Organization) => {
+    // Navigate to users page with organization filter
+    navigate(`/users?orgId=${organization.id}`);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -38,7 +68,10 @@ export default function OrganizationsPage() {
           <h1 className="text-2xl font-bold text-gray-900">Organizations</h1>
           <p className="text-gray-600">Manage organizations and their settings</p>
         </div>
-        <button className="btn-primary flex items-center">
+        <button 
+          onClick={() => setShowCreateModal(true)}
+          className="btn-primary flex items-center"
+        >
           <Plus className="h-4 w-4 mr-2" />
           Add Organization
         </button>
@@ -50,7 +83,10 @@ export default function OrganizationsPage() {
           <h3 className="mt-2 text-sm font-medium text-gray-900">No organizations</h3>
           <p className="mt-1 text-sm text-gray-500">Get started by adding a new organization.</p>
           <div className="mt-6">
-            <button className="btn-primary">
+            <button 
+              onClick={() => setShowCreateModal(true)}
+              className="btn-primary"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Organization
             </button>
@@ -65,7 +101,11 @@ export default function OrganizationsPage() {
                   <Building2 className="h-8 w-8 text-blue-600" />
                   <h3 className="ml-3 text-lg font-medium text-gray-900">{org.name}</h3>
                 </div>
-                <button className="p-2 text-gray-400 hover:text-gray-600">
+                <button 
+                  onClick={() => handleEditOrganization(org)}
+                  className="p-2 text-gray-400 hover:text-gray-600"
+                  title="Edit organization"
+                >
                   <Edit className="h-4 w-4" />
                 </button>
               </div>
@@ -81,7 +121,10 @@ export default function OrganizationsPage() {
                   <span className="text-sm text-gray-500">
                     Created {new Date(org.createdAt).toLocaleDateString()}
                   </span>
-                  <button className="flex items-center text-sm text-blue-600 hover:text-blue-800">
+                  <button 
+                    onClick={() => handleViewUsers(org)}
+                    className="flex items-center text-sm text-blue-600 hover:text-blue-800"
+                  >
                     <Users className="h-4 w-4 mr-1" />
                     View Users
                   </button>
@@ -90,6 +133,24 @@ export default function OrganizationsPage() {
             </div>
           ))}
         </div>
+      )}
+
+      {showCreateModal && (
+        <CreateOrganizationModal
+          onClose={() => setShowCreateModal(false)}
+          onOrganizationCreated={handleOrganizationCreated}
+        />
+      )}
+
+      {showEditModal && selectedOrganization && (
+        <EditOrganizationModal
+          organization={selectedOrganization}
+          onClose={() => {
+            setShowEditModal(false);
+            setSelectedOrganization(null);
+          }}
+          onOrganizationUpdated={handleOrganizationUpdated}
+        />
       )}
     </div>
   );

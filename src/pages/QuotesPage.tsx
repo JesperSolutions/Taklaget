@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useData } from '../contexts/DataContext';
 import { Quote } from '../shared/types';
-import { Plus, Calculator, Eye, Edit, Mail, Download } from 'lucide-react';
+import { Plus, Calculator, Eye, Edit, Mail, Download, Trash2 } from 'lucide-react';
 import CreateQuoteModal from '../components/CreateQuoteModal';
 import EmailModal from '../components/EmailModal';
 import { MockEmailService } from '../services/EmailService';
@@ -69,6 +69,19 @@ export default function QuotesPage() {
   const handleDownloadPDF = (quote: Quote) => {
     console.log('Downloading PDF for quote:', quote.id);
     alert('PDF download functionality will be implemented with a PDF generation service.');
+  };
+
+  const handleDeleteQuote = async (quote: Quote) => {
+    if (confirm(`Are you sure you want to delete the quote for ${quote.customer.name}?`)) {
+      try {
+        // In a real implementation, you'd call dataService.deleteQuote(quote.id)
+        setQuotes(prev => prev.filter(q => q.id !== quote.id));
+        alert('Quote deleted successfully');
+      } catch (error) {
+        console.error('Error deleting quote:', error);
+        alert('Failed to delete quote');
+      }
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -177,6 +190,13 @@ export default function QuotesPage() {
                         title="Download PDF"
                       >
                         <Download className="h-4 w-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteQuote(quote)}
+                        className="p-2 text-gray-400 hover:text-red-600"
+                        title="Delete quote"
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   </div>

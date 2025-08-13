@@ -1,27 +1,42 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useData } from '../contexts/DataContext';
-import { User } from '../shared/types';
-import { Plus, Users, Edit, Trash2 } from 'lucide-react';
+import { User, Organization } from '../shared/types';
+import { Plus, Users, Edit, Trash2, Filter } from 'lucide-react';
+import CreateUserModal from '../components/CreateUserModal';
 
 export default function UsersPage() {
   const { user: currentUser } = useAuth();
   const { dataService } = useData();
+  const [searchParams] = useSearchParams();
   const [users, setUsers] = useState<User[]>([]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [selectedOrgId, setSelectedOrgId] = useState<string>(searchParams.get('orgId') || '');
 
   useEffect(() => {
-    const loadUsers = async () => {
+    const loadData = async () => {
       try {
         if (!currentUser) return;
 
-        let fetchedUsers: User[] = [];
-
+        // Load organizations for super admin
         if (currentUser.role === 'SUPER_ADMIN') {
-          // Super admin sees all users
-          fetchedUsers = await dataService.getUsers();
+          const orgs = await dataService.getOrganizations();
+          setOrganizations(orgs);
+        }
+
+        // Load users based on role and filters
+        let fetchedUsers: User[] = [];
+        
+        if (currentUser.role === 'SUPER_ADMIN') {
+          if (selectedOrgId) {
+            fetchedUsers = await dataService.getUsers(selectedOrgId);
+          } else {
+            fetchedUsers = await dataService.getUsers();
+          }
         } else if (currentUser.role === 'ORG_ADMIN') {
-          // Org admin sees users in their organization
           fetchedUsers = await dataService.getUsers(currentUser.orgId);
         }
 
@@ -33,8 +48,31 @@ export default function UsersPage() {
       }
     };
 
-    loadUsers();
-  }, [currentUser, dataService]);
+    loadData();
+  }, [currentUser, dataService, selectedOrgId]);
+
+  const handleUserCreated = (newUser: User) => {
+    setUsers(prev => [newUser, ...prev]);
+    setShowCreateModal(false);
+  };
+
+  const handleDeleteUser = async (userToDelete: User) => {
+    if (userToDelete.uid === currentUser?.uid) {
+      alert("You cannot delete your own account.");
+      return;
+    }
+
+    if (confirm(`Are you sure you want to delete ${userToDelete.name}?`)) {
+      try {
+        // In a real implementation, you'd call dataService.deleteUser(userToDelete.uid)
+        setUsers(prev => prev.filter(u => u.uid !== userToDelete.uid));
+        alert('User deleted successfully');
+      } catch (error) {
+        console.error('Error deleting user:', error);
+        alert('Failed to delete user');
+      }
+    }
+  };
 
   const getRoleColor = (role: string) => {
     switch (role) {
@@ -53,6 +91,11 @@ export default function UsersPage() {
     return role.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
   };
 
+  const getOrganizationName = (orgId: string) => {
+    const org = organizations.find(o => o.id === orgId);
+    return org?.name || 'Unknown Organization';
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -68,11 +111,38 @@ export default function UsersPage() {
           <h1 className="text-2xl font-bold text-gray-900">Users</h1>
           <p className="text-gray-600">Manage user accounts and permissions</p>
         </div>
-        <button className="btn-primary flex items-center">
+        <button 
+          onClick={() => setShowCreateModal(true)}
+          className="btn-primary flex items-center"
+        >
           <Plus className="h-4 w-4 mr-2" />
           Add User
         </button>
       </div>
+
+      {/* Filters for Super Admin */}
+      {currentUser?.role === 'SUPER_ADMIN' && (
+        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex items-center space-x-4">
+            <Filter className="h-5 w-5 text-gray-400" />
+            <div className="flex items-center space-x-2">
+              <label className="text-sm font-medium text-gray-700">Organization:</label>
+              <select
+                className="form-input w-64"
+                value={selectedOrgId}
+                onChange={(e) => setSelectedOrgId(e.target.value)}
+              >
+                <option value="">All Organizations</option>
+                {organizations.map((org) => (
+                  <option key={org.id} value={org.id}>
+                    {org.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
 
       {users.length === 0 ? (
         <div className="text-center py-12">
@@ -80,7 +150,10 @@ export default function UsersPage() {
           <h3 className="mt-2 text-sm font-medium text-gray-900">No users</h3>
           <p className="mt-1 text-sm text-gray-500">Get started by adding a new user.</p>
           <div className="mt-6">
-            <button className="btn-primary">
+            <button 
+              onClick={() => setShowCreateModal(true)}
+              className="btn-primary"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add User
             </button>
@@ -112,9 +185,12 @@ export default function UsersPage() {
                         </div>
                         <div className="mt-1">
                           <p className="text-sm text-gray-600">{user.email}</p>
-                          <p className="text-sm text-gray-500">
-                            Created {new Date(user.createdAt).toLocaleDateString()}
-                          </p>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500">
+                            {currentUser?.role === 'SUPER_ADMIN' && (
+                              <span>{getOrganizationName(user.orgId)}</span>
+                            )}
+                            <span>Created {new Date(user.createdAt).toLocaleDateString()}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -123,7 +199,10 @@ export default function UsersPage() {
                         <Edit className="h-4 w-4" />
                       </button>
                       {user.uid !== currentUser?.uid && (
-                        <button className="p-2 text-gray-400 hover:text-red-600">
+                        <button 
+                          onClick={() => handleDeleteUser(user)}
+                          className="p-2 text-gray-400 hover:text-red-600"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </button>
                       )}
@@ -134,6 +213,14 @@ export default function UsersPage() {
             ))}
           </ul>
         </div>
+      )}
+
+      {showCreateModal && (
+        <CreateUserModal
+          onClose={() => setShowCreateModal(false)}
+          onUserCreated={handleUserCreated}
+          preselectedOrgId={selectedOrgId}
+        />
       )}
     </div>
   );

@@ -91,7 +91,7 @@ export interface ApiToken {
 }
 
 export interface InspectionReportInput {
-  customer: Customer;
+  customer: Omit<Customer, 'id'>;
   address: string;
   roofType: string;
   findings: string;
@@ -101,7 +101,7 @@ export interface InspectionReportInput {
 
 export interface QuoteInput {
   reportId?: string;
-  customer: Customer;
+  customer: Omit<Customer, 'id'>;
   lineItems: Omit<QuoteLineItem, 'id' | 'total'>[];
   tax: number;
   currency: string;

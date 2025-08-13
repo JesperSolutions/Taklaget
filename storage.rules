@@ -1,0 +1,56 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserRole() {
+      return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    function isSuperAdmin() {
+      return isAuthenticated() && getUserRole() == 'SUPER_ADMIN';
+    }
+    
+    function isOrgAdmin() {
+      return isAuthenticated() && getUserRole() == 'ORG_ADMIN';
+    }
+    
+    function isRoofer() {
+      return isAuthenticated() && getUserRole() == 'ROOFER';
+    }
+
+    // Report photos
+    match /reports/{reportId}/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (
+        isSuperAdmin() || 
+        isOrgAdmin() || 
+        isRoofer()
+      );
+      allow delete: if isSuperAdmin() || isOrgAdmin();
+    }
+
+    // User profile photos
+    match /users/{userId}/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (
+        isSuperAdmin() || 
+        isOrgAdmin() || 
+        userId == request.auth.uid
+      );
+      allow delete: if isSuperAdmin() || 
+        isOrgAdmin() || 
+        userId == request.auth.uid;
+    }
+
+    // Organization assets
+    match /organizations/{orgId}/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isSuperAdmin() || isOrgAdmin();
+      allow delete: if isSuperAdmin();
+    }
+  }
+}

@@ -1,0 +1,121 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    function isSuperAdmin() {
+      return isAuthenticated() && getUserRole() == 'SUPER_ADMIN';
+    }
+    
+    function isOrgAdmin() {
+      return isAuthenticated() && getUserRole() == 'ORG_ADMIN';
+    }
+    
+    function isRoofer() {
+      return isAuthenticated() && getUserRole() == 'ROOFER';
+    }
+    
+    function getUserOrgId() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.orgId;
+    }
+    
+    function getUserDepartmentId() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.departmentId;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (
+        isSuperAdmin() || 
+        (isOrgAdmin() && resource.data.orgId == getUserOrgId()) ||
+        userId == request.auth.uid
+      );
+      allow create: if isSuperAdmin() || isOrgAdmin();
+      allow update: if isSuperAdmin() || 
+        (isOrgAdmin() && resource.data.orgId == getUserOrgId()) ||
+        userId == request.auth.uid;
+      allow delete: if isSuperAdmin() || 
+        (isOrgAdmin() && resource.data.orgId == getUserOrgId());
+    }
+
+    // Organizations collection
+    match /organizations/{orgId} {
+      allow read: if isAuthenticated() && (
+        isSuperAdmin() || 
+        (isOrgAdmin() && orgId == getUserOrgId()) ||
+        (isRoofer() && orgId == getUserOrgId())
+      );
+      allow create, update, delete: if isSuperAdmin();
+    }
+
+    // Departments collection
+    match /departments/{deptId} {
+      allow read: if isAuthenticated() && (
+        isSuperAdmin() || 
+        resource.data.orgId == getUserOrgId()
+      );
+      allow create, update, delete: if isSuperAdmin() || 
+        (isOrgAdmin() && resource.data.orgId == getUserOrgId());
+    }
+
+    // Inspection Reports collection
+    match /inspectionReports/{reportId} {
+      allow read: if isAuthenticated() && (
+        isSuperAdmin() || 
+        resource.data.orgId == getUserOrgId() ||
+        (isRoofer() && resource.data.rooferId == request.auth.uid)
+      );
+      allow create: if isAuthenticated() && (
+        isSuperAdmin() || 
+        isOrgAdmin() || 
+        isRoofer()
+      );
+      allow update: if isAuthenticated() && (
+        isSuperAdmin() || 
+        (isOrgAdmin() && resource.data.orgId == getUserOrgId()) ||
+        (isRoofer() && resource.data.rooferId == request.auth.uid)
+      );
+      allow delete: if isSuperAdmin() || 
+        (isOrgAdmin() && resource.data.orgId == getUserOrgId());
+    }
+
+    // Quotes collection
+    match /quotes/{quoteId} {
+      allow read: if isAuthenticated() && (
+        isSuperAdmin() || 
+        resource.data.orgId == getUserOrgId() ||
+        (isRoofer() && resource.data.rooferId == request.auth.uid)
+      );
+      allow create: if isAuthenticated() && (
+        isSuperAdmin() || 
+        isOrgAdmin() || 
+        isRoofer()
+      );
+      allow update: if isAuthenticated() && (
+        isSuperAdmin() || 
+        (isOrgAdmin() && resource.data.orgId == getUserOrgId()) ||
+        (isRoofer() && resource.data.rooferId == request.auth.uid)
+      );
+      allow delete: if isSuperAdmin() || 
+        (isOrgAdmin() && resource.data.orgId == getUserOrgId());
+    }
+
+    // Email logs collection
+    match /emailLogs/{logId} {
+      allow read: if isSuperAdmin();
+      allow create: if isAuthenticated();
+    }
+
+    // API Tokens collection
+    match /apiTokens/{tokenId} {
+      allow read, create, update, delete: if isSuperAdmin();
+    }
+  }
+}

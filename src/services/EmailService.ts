@@ -32,9 +32,20 @@ export class MockEmailService implements EmailService {
 
 // Firebase Cloud Functions implementation would go here
 export class FirebaseEmailService implements EmailService {
+  private getFunctionUrl(functionName: string): string {
+    const isDev = import.meta.env.DEV;
+    const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+    const emulatorHost = import.meta.env.VITE_FIREBASE_EMULATOR_HOST || 'localhost';
+    
+    if (isDev) {
+      return `http://${emulatorHost}:5001/${projectId}/us-central1/${functionName}`;
+    }
+    
+    return `https://us-central1-${projectId}.cloudfunctions.net/${functionName}`;
+  }
+
   async sendReportEmail(reportId: string, recipientEmail: string, subject?: string): Promise<void> {
-    // Call Firebase Cloud Function
-    const response = await fetch('/api/sendReportEmail', {
+    const response = await fetch(this.getFunctionUrl('sendReportEmail'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ reportId, recipientEmail, subject })
@@ -46,7 +57,7 @@ export class FirebaseEmailService implements EmailService {
   }
 
   async sendQuoteEmail(quoteId: string, recipientEmail: string, subject?: string): Promise<void> {
-    const response = await fetch('/api/sendQuoteEmail', {
+    const response = await fetch(this.getFunctionUrl('sendQuoteEmail'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ quoteId, recipientEmail, subject })

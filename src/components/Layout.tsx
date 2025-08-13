@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useState } from 'react';
 import { 
   Home, 
   FileText, 
@@ -11,7 +12,6 @@ import {
   Menu,
   X
 } from 'lucide-react';
-import { useState } from 'react';
 
 interface LayoutProps {
   children: ReactNode;

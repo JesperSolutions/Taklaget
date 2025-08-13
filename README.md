@@ -45,32 +45,80 @@ A TypeScript React application for roof inspection and quote management, built w
 - Node.js 18+ 
 - npm or yarn
 - Firebase CLI (`npm install -g firebase-tools`)
+- Firebase project with Admin SDK service account
 
 ### Installation
 
 1. Clone the repository
+
 2. Copy environment variables:
    ```bash
    cp .env.example .env
    ```
    
-3. Install Firebase CLI and login:
+3. **🔒 SECURITY SETUP - CRITICAL:**
+   
+   **For Frontend (Public Config):**
+   - Go to Firebase Console > Project Settings > General
+   - Copy your web app config to `.env`:
+   ```bash
+   VITE_FIREBASE_API_KEY=your_api_key
+   VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+   VITE_FIREBASE_PROJECT_ID=your_project_id
+   # ... etc
+   ```
+   
+   **For Backend (Private - NEVER COMMIT):**
+   - Go to Firebase Console > Project Settings > Service Accounts
+   - Generate new private key (if you exposed the old one)
+   - Set environment variables in your deployment platform:
+   ```bash
+   # In your deployment platform (Vercel, Netlify, etc.)
+   FIREBASE_ADMIN_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
+   FIREBASE_ADMIN_CLIENT_EMAIL="your-service@project.iam.gserviceaccount.com"
+   FIREBASE_ADMIN_PROJECT_ID="your-project-id"
+   ```
+   
+4. Install Firebase CLI and login:
    ```bash
    npm install -g firebase-tools
    firebase login
    ```
 
-4. Configure Firebase:
-   - Create a Firebase project
+5. Configure Firebase:
+   - Create a Firebase project (or use existing: taklaget-mvp)
    - Enable Authentication, Firestore, and Storage
-   - Add your Firebase config to `.env`
    - Update `.firebaserc` with your project ID
 
-5. Install dependencies:
+6. Install dependencies:
    ```bash
    npm install
    cd functions && npm install && cd ..
    ```
+
+### 🔒 **SECURITY BEST PRACTICES:**
+
+1. **NEVER commit `.env` files** - they're in `.gitignore`
+2. **NEVER commit service account keys** - use environment variables
+3. **Rotate keys immediately** if accidentally exposed
+4. **Use different keys** for development and production
+5. **Set up Firebase security rules** before going live
+
+### 🚀 **Deployment Security:**
+
+**For Vercel:**
+```bash
+vercel env add FIREBASE_ADMIN_PRIVATE_KEY
+vercel env add FIREBASE_ADMIN_CLIENT_EMAIL
+vercel env add FIREBASE_ADMIN_PROJECT_ID
+```
+
+**For Netlify:**
+```bash
+netlify env:set FIREBASE_ADMIN_PRIVATE_KEY "your_private_key"
+netlify env:set FIREBASE_ADMIN_CLIENT_EMAIL "your_email"
+netlify env:set FIREBASE_ADMIN_PROJECT_ID "your_project_id"
+```
 
 ### Development with Firebase Emulators
 

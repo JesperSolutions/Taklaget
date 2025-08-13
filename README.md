@@ -44,6 +44,7 @@ A TypeScript React application for roof inspection and quote management, built w
 
 - Node.js 18+ 
 - npm or yarn
+- Firebase CLI (`npm install -g firebase-tools`)
 
 ### Installation
 
@@ -53,22 +54,61 @@ A TypeScript React application for roof inspection and quote management, built w
    cp .env.example .env
    ```
    
-3. Configure Firebase:
+3. Install Firebase CLI and login:
+   ```bash
+   npm install -g firebase-tools
+   firebase login
+   ```
+
+4. Configure Firebase:
    - Create a Firebase project
    - Enable Authentication, Firestore, and Storage
    - Add your Firebase config to `.env`
+   - Update `.firebaserc` with your project ID
 
-4. Install dependencies:
+5. Install dependencies:
    ```bash
    npm install
+   cd functions && npm install && cd ..
    ```
 
-5. Start the development server:
+### Development with Firebase Emulators
+
+1. Start Firebase emulators and development server:
    ```bash
+   npm run dev:full
+   ```
+   
+   Or start them separately:
+   ```bash
+   # Terminal 1: Start Firebase emulators
+   npm run dev:emulators
+   
+   # Terminal 2: Start Vite dev server
    npm run dev
    ```
 
-6. Open your browser to `http://localhost:5173`
+2. Access the application:
+   - **Frontend**: `http://localhost:5173`
+   - **Firebase Emulator UI**: `http://localhost:4000`
+   - **Firestore Emulator**: `http://localhost:8080`
+
+### Production Deployment
+
+1. Build and deploy to Firebase:
+   ```bash
+   npm run firebase:deploy
+   ```
+
+2. Deploy only hosting:
+   ```bash
+   npm run firebase:deploy:hosting
+   ```
+
+3. Deploy only functions:
+   ```bash
+   npm run firebase:deploy:functions
+   ```
 
 ### Demo Users
 
@@ -83,6 +123,17 @@ The application comes with pre-seeded demo users:
 
 *Note: Mock authentication accepts any password*
 
+### Firebase Emulator Suite
+
+The project is configured to work with Firebase Local Emulator Suite for development:
+
+- **Authentication Emulator**: Port 9099
+- **Firestore Emulator**: Port 8080  
+- **Storage Emulator**: Port 9199
+- **Functions Emulator**: Port 5001
+- **Hosting Emulator**: Port 5000
+- **Emulator UI**: Port 4000
+
 ### Seeding Data
 
 To view the current mock data structure:
@@ -90,6 +141,17 @@ To view the current mock data structure:
 ```bash
 npm run seed
 ```
+
+### Email Configuration
+
+For email functionality in production:
+
+1. Configure email credentials:
+   ```bash
+   firebase functions:config:set email.user="your-email@gmail.com" email.password="your-app-password"
+   ```
+
+2. Or set environment variables in your deployment environment.
 
 ## Project Structure
 
@@ -101,8 +163,47 @@ src/
 ├── pages/              # Page components
 ├── services/           # Data services and interfaces
 ├── shared/             # Shared types and schemas
-└── main.tsx           # Application entry point
+├── main.tsx           # Application entry point
+├── functions/          # Firebase Cloud Functions
+├── firestore.rules     # Firestore security rules
+├── storage.rules       # Storage security rules
+├── firebase.json       # Firebase configuration
+└── .firebaserc        # Firebase project configuration
 ```
+
+## Firebase Integration
+
+### 🔥 **Production Setup:**
+
+1. **Switch to Firebase Services:**
+   ```typescript
+   // In src/contexts/DataContext.tsx
+   const dataService = new FirebaseDataService();
+   
+   // In src/contexts/AuthContext.tsx  
+   const authService = new FirebaseAuthService();
+   ```
+
+2. **Deploy Firestore Rules:**
+   ```bash
+   firebase deploy --only firestore:rules
+   ```
+
+3. **Deploy Storage Rules:**
+   ```bash
+   firebase deploy --only storage
+   ```
+
+### 📧 **Email Integration:**
+- Development: Uses `MockEmailService`
+- Production: Uses `FirebaseEmailService` with Cloud Functions
+- PDF generation hooks included for future implementation
+
+### 🔒 **Security Rules:**
+- **Role-based access control** implemented in Firestore rules
+- **Organization-level data isolation**
+- **User-specific data access** for roofers
+- **Admin privileges** for super admins and org admins
 
 ## Data Service Interface
 
@@ -120,41 +221,13 @@ interface DataService {
 
 Currently implemented with `MockDataService` for development. Ready for `FirebaseDataService` implementation.
 
-## Firebase Integration (Future)
-
-## Firebase Integration
-
-The application is now Firebase-ready with:
-
-### 🔥 **Firebase Services Implemented:**
-- **Authentication**: Email/password with role-based access
-- **Firestore**: Document-based data storage
-- **Storage**: Photo upload and management
-- **Security Rules**: Role-based data access
-
-### 📁 **File Structure:**
-```
-src/
-├── config/firebase.ts          # Firebase configuration
-├── services/
-│   ├── FirebaseDataService.ts  # Production data service
-│   ├── FirebaseAuthService.ts  # Production auth service
-│   ├── MockDataService.ts      # Development fallback
-│   └── EmailService.ts         # Email functionality
-```
-
-### 🔄 **Switching to Firebase:**
-1. Configure environment variables in `.env`
-2. Update `src/contexts/DataContext.tsx` to use `FirebaseDataService`
-3. Update `src/contexts/AuthContext.tsx` to use `FirebaseAuthService`
-4. Deploy Firestore security rules
-5. Set up Firebase Storage rules
-
-### 📧 **Email Integration:**
-- Mock email service for development
-- Firebase Cloud Functions ready for production
-- PDF generation hooks included
-- Customer email integration
+### 🚀 **Available Scripts:**
+- `npm run dev` - Development server only
+- `npm run dev:emulators` - Firebase emulators only  
+- `npm run dev:full` - Both emulators and dev server
+- `npm run firebase:deploy` - Deploy everything
+- `npm run firebase:deploy:hosting` - Deploy hosting only
+- `npm run firebase:deploy:functions` - Deploy functions only
 
 ## Role-Based Access Control
 

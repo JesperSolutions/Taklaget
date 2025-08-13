@@ -75,14 +75,6 @@ match /reports/{reportId}/{allPaths=**} {
 - Environment variables in deployment platform
 - Monitoring and logging enabled
 
-## 🚨 If Keys Are Compromised
-
-1. **Immediately revoke** the compromised key in Firebase Console
-2. **Generate new key** with minimal required permissions
-3. **Update environment variables** in all deployment platforms
-4. **Review access logs** for unauthorized usage
-5. **Consider rotating all related credentials**
-
 ## Deployment Platforms
 
 ### Vercel

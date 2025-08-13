@@ -14,7 +14,8 @@
     "test": "vitest",
     "firebase:deploy": "npm run build && firebase deploy",
     "firebase:deploy:hosting": "npm run build && firebase deploy --only hosting",
-    "firebase:deploy:functions": "firebase deploy --only functions"
+    "firebase:deploy:functions": "firebase deploy --only functions",
+    "firebase:seed": "node scripts/setup-firebase.js"
   },
   "dependencies": {
     "@types/node": "^24.2.1",

@@ -11,6 +11,8 @@ import {
   CheckCircle
 } from 'lucide-react';
 import { InspectionReport, Quote, User, Organization } from '../shared/types';
+import { DatabaseAdminPanel } from '../components/DatabaseAdminPanel';
+import { FirstUserSetup } from '../components/FirstUserSetup';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -223,6 +225,20 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
+
+                        {/* Database Admin Panel - Only for Super Admins */}
+                  {user?.role === 'SUPER_ADMIN' && (
+                    <div className="card">
+                      <DatabaseAdminPanel />
+                    </div>
+                  )}
+
+                  {/* First User Setup - Show when no user is logged in */}
+                  {!user && (
+                    <div className="card">
+                      <FirstUserSetup />
+                    </div>
+                  )}
+                </div>
+              );
+            }

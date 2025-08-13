@@ -13,6 +13,16 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
+// Debug: Log config in development (remove this in production)
+if (import.meta.env.DEV) {
+  console.log('Firebase Config:', {
+    projectId: firebaseConfig.projectId,
+    authDomain: firebaseConfig.authDomain,
+    hasApiKey: !!firebaseConfig.apiKey,
+    hasAppId: !!firebaseConfig.appId
+  });
+}
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
@@ -22,29 +32,21 @@ export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const functions = getFunctions(app);
 
-// Connect to emulators in development
-if (import.meta.env.DEV) {
+// Connect to emulators in development (only if explicitly enabled)
+if (import.meta.env.DEV && import.meta.env.VITE_FIREBASE_USE_EMULATORS === 'true') {
   const emulatorHost = import.meta.env.VITE_FIREBASE_EMULATOR_HOST || 'localhost';
   
   // Connect to Auth emulator
-  if (!auth.config.emulator) {
-    connectAuthEmulator(auth, `http://${emulatorHost}:9099`, { disableWarnings: true });
-  }
+  connectAuthEmulator(auth, `http://${emulatorHost}:9099`, { disableWarnings: true });
   
   // Connect to Firestore emulator
-  if (!db._delegate._databaseId.projectId.includes('demo-')) {
-    connectFirestoreEmulator(db, emulatorHost, 8080);
-  }
+  connectFirestoreEmulator(db, emulatorHost, 8080);
   
   // Connect to Storage emulator
-  if (!storage._location.host.includes('localhost')) {
-    connectStorageEmulator(storage, emulatorHost, 9199);
-  }
+  connectStorageEmulator(storage, emulatorHost, 9199);
   
   // Connect to Functions emulator
-  if (!functions._url?.includes('localhost')) {
-    connectFunctionsEmulator(functions, emulatorHost, 5001);
-  }
+  connectFunctionsEmulator(functions, emulatorHost, 5001);
 }
 
 export default app;

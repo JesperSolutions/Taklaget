@@ -1,6 +1,7 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { DataService } from '../services/DataService';
 import { MockDataService } from '../services/MockDataService';
+import { FirebaseDataService } from '../services/FirebaseDataService';
 
 interface DataContextType {
   dataService: DataService;
@@ -8,7 +9,8 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-const dataService = new MockDataService();
+// Use Firebase in production, Mock in development (you can change this)
+const dataService = new FirebaseDataService();
 
 export function DataProvider({ children }: { children: ReactNode }) {
   return (

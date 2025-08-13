@@ -37,7 +37,8 @@ service cloud.firestore {
         (isOrgAdmin() && resource.data.orgId == getUserOrgId()) ||
         userId == request.auth.uid
       );
-      allow create: if isSuperAdmin() || isOrgAdmin();
+      allow create: if isSuperAdmin() || isOrgAdmin() ||
+        (request.auth == null && resource == null);
       allow update: if isSuperAdmin() || 
         (isOrgAdmin() && resource.data.orgId == getUserOrgId()) ||
         userId == request.auth.uid;
@@ -52,7 +53,9 @@ service cloud.firestore {
         (isOrgAdmin() && orgId == getUserOrgId()) ||
         (isRoofer() && orgId == getUserOrgId())
       );
-      allow create, update, delete: if isSuperAdmin();
+      allow create: if isSuperAdmin() || 
+        (request.auth == null && resource == null);
+      allow update, delete: if isSuperAdmin();
     }
 
     // Departments collection
@@ -63,6 +66,10 @@ service cloud.firestore {
       );
       allow create, update, delete: if isSuperAdmin() || 
         (isOrgAdmin() && resource.data.orgId == getUserOrgId());
+      // Allow creation of first department during initialization
+      allow create: if isSuperAdmin() || 
+        (isOrgAdmin() && resource.data.orgId == getUserOrgId()) ||
+        (request.auth == null && resource == null);
     }
 
     // Inspection Reports collection
@@ -116,6 +123,11 @@ service cloud.firestore {
     // API Tokens collection
     match /apiTokens/{tokenId} {
       allow read, create, update, delete: if isSuperAdmin();
+    }
+    
+    // System collection for initialization
+    match /_system/{docId} {
+      allow read, write: if true; // Allow initialization
     }
   }
 }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { DataProvider } from './contexts/DataContext'
@@ -10,8 +10,23 @@ import UsersPage from './pages/UsersPage'
 import OrganizationsPage from './pages/OrganizationsPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
+import { DatabaseInitService } from './services/DatabaseInitService'
 
 function App() {
+  useEffect(() => {
+    // Initialize database on first launch
+    const initDatabase = async () => {
+      try {
+        const dbInitService = DatabaseInitService.getInstance();
+        await dbInitService.initializeDatabase();
+      } catch (error) {
+        console.error('Failed to initialize database:', error);
+      }
+    };
+
+    initDatabase();
+  }, []);
+
   return (
     <AuthProvider>
       <DataProvider>

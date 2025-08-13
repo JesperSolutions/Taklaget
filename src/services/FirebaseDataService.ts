@@ -85,6 +85,11 @@ export class FirebaseDataService implements DataService {
     return updated;
   }
 
+  async deleteOrganization(id: string): Promise<void> {
+    const docRef = doc(db, 'organizations', id);
+    await deleteDoc(docRef);
+  }
+
   // Departments
   async getDepartments(orgId: string): Promise<Department[]> {
     const q = query(
@@ -121,6 +126,11 @@ export class FirebaseDataService implements DataService {
     const updated = await this.getDepartment(orgId, id);
     if (!updated) throw new Error('Department not found after update');
     return updated;
+  }
+
+  async deleteDepartment(orgId: string, id: string): Promise<void> {
+    const docRef = doc(db, 'departments', id);
+    await deleteDoc(docRef);
   }
 
   // Users
@@ -166,6 +176,11 @@ export class FirebaseDataService implements DataService {
     return updated;
   }
 
+  async deleteUser(uid: string): Promise<void> {
+    const docRef = doc(db, 'users', uid);
+    await deleteDoc(docRef);
+  }
+
   // Inspection Reports
   async getReports(orgId: string, departmentId?: string, rooferId?: string): Promise<InspectionReport[]> {
     let q = query(
@@ -205,10 +220,10 @@ export class FirebaseDataService implements DataService {
       contactPerson: data.contactPerson,
       phone: data.phone,
       email: data.email,
-      companyContact: data.companyContact,
-      companyPhone: data.companyPhone,
-      companyEmail: data.companyEmail,
-      roofMaterial: data.roofMaterial,
+      agritectumContact: data.agritectumContact,
+      agritectumPhone: data.agritectumPhone,
+      agritectumEmail: data.agritectumEmail,
+      roofType: data.roofType,
       roofArea: data.roofArea,
       roofAge: data.roofAge,
       accessConditions: data.accessConditions,

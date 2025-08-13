@@ -16,17 +16,52 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
   const { dataService } = useData();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [currentTab, setCurrentTab] = useState('building');
   const [formData, setFormData] = useState({
+    // Building & Contact Info
     customerName: '',
     customerEmail: '',
     customerPhone: '',
     customerAddress: '',
     address: '',
+    contactPerson: '',
+    phone: '',
+    email: '',
+    agritectumContact: '',
+    agritectumPhone: '',
+    agritectumEmail: '',
+    
+    // Technical Details
     roofType: '',
+    roofArea: 0,
+    roofAge: '',
+    accessConditions: '',
+    fallProtection: false,
+    technicalExecution: '',
+    drainage: '',
+    edges: '',
+    skylights: '',
+    technicalInstallations: '',
+    insulationType: '',
+    greenRoof: false,
+    solarPanels: false,
+    solarPanelsDescription: '',
+    noxReduction: false,
+    rainwaterCollection: false,
+    recreationalAreas: false,
+    
+    // Assessment
     findings: '',
     recommendations: '',
+    economicAssessment: '',
     photos: [] as string[],
   });
+
+  const tabs = [
+    { id: 'building', name: 'Bygning & Kontakt', icon: '🏢' },
+    { id: 'checklist', name: 'Check Liste', icon: '✅' },
+    { id: 'assessment', name: 'Vurdering', icon: '📋' },
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,9 +79,32 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
           address: formData.customerAddress,
         },
         address: formData.address,
+        contactPerson: formData.contactPerson,
+        phone: formData.phone,
+        email: formData.email,
+        agritectumContact: formData.agritectumContact,
+        agritectumPhone: formData.agritectumPhone,
+        agritectumEmail: formData.agritectumEmail,
         roofType: formData.roofType,
+        roofArea: Number(formData.roofArea),
+        roofAge: formData.roofAge,
+        accessConditions: formData.accessConditions,
+        fallProtection: formData.fallProtection,
+        technicalExecution: formData.technicalExecution,
+        drainage: formData.drainage,
+        edges: formData.edges,
+        skylights: formData.skylights,
+        technicalInstallations: formData.technicalInstallations,
+        insulationType: formData.insulationType,
+        greenRoof: formData.greenRoof,
+        solarPanels: formData.solarPanels,
+        solarPanelsDescription: formData.solarPanelsDescription,
+        noxReduction: formData.noxReduction,
+        rainwaterCollection: formData.rainwaterCollection,
+        recreationalAreas: formData.recreationalAreas,
         findings: formData.findings,
         recommendations: formData.recommendations,
+        economicAssessment: formData.economicAssessment,
         photos: formData.photos,
       };
 
@@ -76,142 +134,480 @@ export default function CreateReportModal({ onClose, onReportCreated }: CreateRe
     }
   };
 
+  const renderBuildingTab = () => (
+    <div className="space-y-6">
+      <div>
+        <h4 className="text-lg font-medium text-gray-900 mb-4">BYGNING & KONTAKTPERSONER</h4>
+        
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div>
+            <label className="form-label">Bygherre</label>
+            <input
+              type="text"
+              className="form-input"
+              value={formData.customerName}
+              onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
+            />
+            {errors['customer.name'] && <p className="mt-1 text-sm text-red-600">{errors['customer.name']}</p>}
+          </div>
+
+          <div>
+            <label className="form-label">Kontakt person</label>
+            <input
+              type="text"
+              className="form-input"
+              value={formData.contactPerson}
+              onChange={(e) => setFormData({ ...formData, contactPerson: e.target.value })}
+            />
+            {errors.contactPerson && <p className="mt-1 text-sm text-red-600">{errors.contactPerson}</p>}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div>
+            <label className="form-label">Adresse</label>
+            <input
+              type="text"
+              className="form-input"
+              value={formData.customerAddress}
+              onChange={(e) => setFormData({ ...formData, customerAddress: e.target.value })}
+            />
+            {errors['customer.address'] && <p className="mt-1 text-sm text-red-600">{errors['customer.address']}</p>}
+          </div>
+
+          <div>
+            <label className="form-label">Telefon</label>
+            <input
+              type="tel"
+              className="form-input"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            />
+            {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
+          </div>
+        </div>
+
+        <div className="mb-6">
+          <label className="form-label">E-mail</label>
+          <input
+            type="email"
+            className="form-input"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          />
+          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+        </div>
+      </div>
+
+      <div>
+        <h4 className="text-lg font-medium text-gray-900 mb-4">AGRITECTUM KONTAKT</h4>
+        
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="form-label">Kontakt</label>
+            <input
+              type="text"
+              className="form-input"
+              value={formData.agritectumContact}
+              onChange={(e) => setFormData({ ...formData, agritectumContact: e.target.value })}
+            />
+            {errors.agritectumContact && <p className="mt-1 text-sm text-red-600">{errors.agritectumContact}</p>}
+          </div>
+
+          <div>
+            <label className="form-label">Telefon</label>
+            <input
+              type="tel"
+              className="form-input"
+              value={formData.agritectumPhone}
+              onChange={(e) => setFormData({ ...formData, agritectumPhone: e.target.value })}
+            />
+            {errors.agritectumPhone && <p className="mt-1 text-sm text-red-600">{errors.agritectumPhone}</p>}
+          </div>
+        </div>
+
+        <div>
+          <label className="form-label">E-mail</label>
+          <input
+            type="email"
+            className="form-input"
+            value={formData.agritectumEmail}
+            onChange={(e) => setFormData({ ...formData, agritectumEmail: e.target.value })}
+          />
+          {errors.agritectumEmail && <p className="mt-1 text-sm text-red-600">{errors.agritectumEmail}</p>}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderChecklistTab = () => (
+    <div className="space-y-6">
+      <h4 className="text-lg font-medium text-gray-900 mb-4">CHECK LISTE</h4>
+      
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div>
+          <label className="form-label">Tag materiale</label>
+          <select
+            className="form-input"
+            value={formData.roofType}
+            onChange={(e) => setFormData({ ...formData, roofType: e.target.value })}
+          >
+            <option value="">Vælg tag type</option>
+            <option value="Tagpap">Tagpap</option>
+            <option value="Tegl tag">Tegl tag</option>
+            <option value="Beton tag">Beton tag</option>
+            <option value="Metal tag">Metal tag</option>
+            <option value="Stråtag">Stråtag</option>
+            <option value="Fladt tag">Fladt tag</option>
+          </select>
+          {errors.roofType && <p className="mt-1 text-sm text-red-600">{errors.roofType}</p>}
+        </div>
+
+        <div>
+          <label className="form-label">Areal (m²)</label>
+          <input
+            type="number"
+            min="0"
+            className="form-input"
+            value={formData.roofArea}
+            onChange={(e) => setFormData({ ...formData, roofArea: parseFloat(e.target.value) || 0 })}
+          />
+          {errors.roofArea && <p className="mt-1 text-sm text-red-600">{errors.roofArea}</p>}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div>
+          <label className="form-label">Alder på tag</label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.roofAge}
+            onChange={(e) => setFormData({ ...formData, roofAge: e.target.value })}
+            placeholder="f.eks. 10 år"
+          />
+        </div>
+
+        <div>
+          <label className="form-label">Adgangsforhold</label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.accessConditions}
+            onChange={(e) => setFormData({ ...formData, accessConditions: e.target.value })}
+            placeholder="f.eks. Adgang med lang stige"
+          />
+          {errors.accessConditions && <p className="mt-1 text-sm text-red-600">{errors.accessConditions}</p>}
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="fallProtection"
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            checked={formData.fallProtection}
+            onChange={(e) => setFormData({ ...formData, fallProtection: e.target.checked })}
+          />
+          <label htmlFor="fallProtection" className="ml-2 block text-sm text-gray-900">
+            Faldsikring / rækværk etableret
+          </label>
+        </div>
+
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="greenRoof"
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            checked={formData.greenRoof}
+            onChange={(e) => setFormData({ ...formData, greenRoof: e.target.checked })}
+          />
+          <label htmlFor="greenRoof" className="ml-2 block text-sm text-gray-900">
+            Grønt tag
+          </label>
+        </div>
+
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="solarPanels"
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            checked={formData.solarPanels}
+            onChange={(e) => setFormData({ ...formData, solarPanels: e.target.checked })}
+          />
+          <label htmlFor="solarPanels" className="ml-2 block text-sm text-gray-900">
+            Solceller
+          </label>
+        </div>
+
+        {formData.solarPanels && (
+          <div className="ml-6">
+            <label className="form-label">Beskrivelse af solceller</label>
+            <input
+              type="text"
+              className="form-input"
+              value={formData.solarPanelsDescription}
+              onChange={(e) => setFormData({ ...formData, solarPanelsDescription: e.target.value })}
+              placeholder="f.eks. 2 mindre områder, limet løsning"
+            />
+          </div>
+        )}
+
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="noxReduction"
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            checked={formData.noxReduction}
+            onChange={(e) => setFormData({ ...formData, noxReduction: e.target.checked })}
+          />
+          <label htmlFor="noxReduction" className="ml-2 block text-sm text-gray-900">
+            NOx reduction
+          </label>
+        </div>
+
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="rainwaterCollection"
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            checked={formData.rainwaterCollection}
+            onChange={(e) => setFormData({ ...formData, rainwaterCollection: e.target.checked })}
+          />
+          <label htmlFor="rainwaterCollection" className="ml-2 block text-sm text-gray-900">
+            Regnvandsopsamling
+          </label>
+        </div>
+
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="recreationalAreas"
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            checked={formData.recreationalAreas}
+            onChange={(e) => setFormData({ ...formData, recreationalAreas: e.target.checked })}
+          />
+          <label htmlFor="recreationalAreas" className="ml-2 block text-sm text-gray-900">
+            Rekreative områder
+          </label>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="form-label">Tekniske udførelse</label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.technicalExecution}
+            onChange={(e) => setFormData({ ...formData, technicalExecution: e.target.value })}
+            placeholder="f.eks. OK"
+          />
+          {errors.technicalExecution && <p className="mt-1 text-sm text-red-600">{errors.technicalExecution}</p>}
+        </div>
+
+        <div>
+          <label className="form-label">Afløb</label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.drainage}
+            onChange={(e) => setFormData({ ...formData, drainage: e.target.value })}
+            placeholder="f.eks. UV tagbrønde"
+          />
+          {errors.drainage && <p className="mt-1 text-sm text-red-600">{errors.drainage}</p>}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="form-label">Opkanter og murkroner</label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.edges}
+            onChange={(e) => setFormData({ ...formData, edges: e.target.value })}
+            placeholder="f.eks. OK"
+          />
+          {errors.edges && <p className="mt-1 text-sm text-red-600">{errors.edges}</p>}
+        </div>
+
+        <div>
+          <label className="form-label">Ovenlys</label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.skylights}
+            onChange={(e) => setFormData({ ...formData, skylights: e.target.value })}
+            placeholder="f.eks. Et enkelt OK"
+          />
+          {errors.skylights && <p className="mt-1 text-sm text-red-600">{errors.skylights}</p>}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="form-label">Tekniske installationer</label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.technicalInstallations}
+            onChange={(e) => setFormData({ ...formData, technicalInstallations: e.target.value })}
+            placeholder="f.eks. OK"
+          />
+          {errors.technicalInstallations && <p className="mt-1 text-sm text-red-600">{errors.technicalInstallations}</p>}
+        </div>
+
+        <div>
+          <label className="form-label">Isoleringstype</label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.insulationType}
+            onChange={(e) => setFormData({ ...formData, insulationType: e.target.value })}
+            placeholder="f.eks. EPS og Mineraluld"
+          />
+          {errors.insulationType && <p className="mt-1 text-sm text-red-600">{errors.insulationType}</p>}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderAssessmentTab = () => (
+    <div className="space-y-6">
+      <div>
+        <label className="form-label">Dokumentation / Findings</label>
+        <textarea
+          rows={4}
+          className="form-input"
+          value={formData.findings}
+          onChange={(e) => setFormData({ ...formData, findings: e.target.value })}
+          placeholder="Beskriv hvad der blev fundet under inspektionen..."
+        />
+        {errors.findings && <p className="mt-1 text-sm text-red-600">{errors.findings}</p>}
+      </div>
+
+      <div>
+        <label className="form-label">Anbefalinger</label>
+        <textarea
+          rows={6}
+          className="form-input"
+          value={formData.recommendations}
+          onChange={(e) => setFormData({ ...formData, recommendations: e.target.value })}
+          placeholder="1. Første anbefaling...&#10;2. Anden anbefaling...&#10;3. Tredje anbefaling..."
+        />
+        {errors.recommendations && <p className="mt-1 text-sm text-red-600">{errors.recommendations}</p>}
+      </div>
+
+      <div>
+        <label className="form-label">Økonomi</label>
+        <textarea
+          rows={3}
+          className="form-input"
+          value={formData.economicAssessment}
+          onChange={(e) => setFormData({ ...formData, economicAssessment: e.target.value })}
+          placeholder="Økonomisk vurdering og estimater..."
+        />
+      </div>
+    </div>
+  );
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose} />
 
-        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
           <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-900">Create Inspection Report</h3>
+              <h3 className="text-lg font-medium text-gray-900">Opret Synsrapport</h3>
               <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
                 <X className="h-6 w-6" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Tab Navigation */}
+            <div className="border-b border-gray-200 mb-6">
+              <nav className="-mb-px flex space-x-8">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setCurrentTab(tab.id)}
+                    className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                      currentTab === tab.id
+                        ? 'border-blue-500 text-blue-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <span className="mr-2">{tab.icon}</span>
+                    {tab.name}
+                  </button>
+                ))}
+              </nav>
+            </div>
+
+            <form onSubmit={handleSubmit}>
               {errors.general && (
-                <div className="rounded-md bg-red-50 p-4">
+                <div className="rounded-md bg-red-50 p-4 mb-6">
                   <p className="text-sm text-red-800">{errors.general}</p>
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="form-label">Customer Name</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={formData.customerName}
-                    onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
-                  />
-                  {errors['customer.name'] && <p className="mt-1 text-sm text-red-600">{errors['customer.name']}</p>}
-                </div>
-
-                <div>
-                  <label className="form-label">Customer Email</label>
-                  <input
-                    type="email"
-                    className="form-input"
-                    value={formData.customerEmail}
-                    onChange={(e) => setFormData({ ...formData, customerEmail: e.target.value })}
-                  />
-                  {errors['customer.email'] && <p className="mt-1 text-sm text-red-600">{errors['customer.email']}</p>}
-                </div>
+              <div className="max-h-96 overflow-y-auto">
+                {currentTab === 'building' && renderBuildingTab()}
+                {currentTab === 'checklist' && renderChecklistTab()}
+                {currentTab === 'assessment' && renderAssessmentTab()}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="form-label">Customer Phone</label>
-                  <input
-                    type="tel"
-                    className="form-input"
-                    value={formData.customerPhone}
-                    onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
-                  />
-                  {errors['customer.phone'] && <p className="mt-1 text-sm text-red-600">{errors['customer.phone']}</p>}
+              <div className="flex justify-between items-center pt-6 mt-6 border-t border-gray-200">
+                <div className="flex space-x-3">
+                  {currentTab !== 'building' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const currentIndex = tabs.findIndex(tab => tab.id === currentTab);
+                        if (currentIndex > 0) {
+                          setCurrentTab(tabs[currentIndex - 1].id);
+                        }
+                      }}
+                      className="btn-secondary"
+                    >
+                      Forrige
+                    </button>
+                  )}
+                  {currentTab !== 'assessment' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const currentIndex = tabs.findIndex(tab => tab.id === currentTab);
+                        if (currentIndex < tabs.length - 1) {
+                          setCurrentTab(tabs[currentIndex + 1].id);
+                        }
+                      }}
+                      className="btn-secondary"
+                    >
+                      Næste
+                    </button>
+                  )}
                 </div>
-
-                <div>
-                  <label className="form-label">Roof Type</label>
-                  <select
-                    className="form-input"
-                    value={formData.roofType}
-                    onChange={(e) => setFormData({ ...formData, roofType: e.target.value })}
+                
+                <div className="flex space-x-3">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="btn-secondary"
                   >
-                    <option value="">Select roof type</option>
-                    <option value="Tegl tag">Tegl tag</option>
-                    <option value="Beton tag">Beton tag</option>
-                    <option value="Metal tag">Metal tag</option>
-                    <option value="Stråtag">Stråtag</option>
-                    <option value="Fladt tag">Fladt tag</option>
-                  </select>
-                  {errors.roofType && <p className="mt-1 text-sm text-red-600">{errors.roofType}</p>}
+                    Annuller
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="btn-primary"
+                  >
+                    {loading ? 'Opretter...' : 'Opret Rapport'}
+                  </button>
                 </div>
-              </div>
-
-              <div>
-                <label className="form-label">Customer Address</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  value={formData.customerAddress}
-                  onChange={(e) => setFormData({ ...formData, customerAddress: e.target.value })}
-                />
-                {errors['customer.address'] && <p className="mt-1 text-sm text-red-600">{errors['customer.address']}</p>}
-              </div>
-
-              <div>
-                <label className="form-label">Inspection Address</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                />
-                {errors.address && <p className="mt-1 text-sm text-red-600">{errors.address}</p>}
-              </div>
-
-              <div>
-                <label className="form-label">Findings</label>
-                <textarea
-                  rows={3}
-                  className="form-input"
-                  value={formData.findings}
-                  onChange={(e) => setFormData({ ...formData, findings: e.target.value })}
-                  placeholder="Describe what you found during the inspection..."
-                />
-                {errors.findings && <p className="mt-1 text-sm text-red-600">{errors.findings}</p>}
-              </div>
-
-              <div>
-                <label className="form-label">Recommendations</label>
-                <textarea
-                  rows={3}
-                  className="form-input"
-                  value={formData.recommendations}
-                  onChange={(e) => setFormData({ ...formData, recommendations: e.target.value })}
-                  placeholder="Recommend actions to be taken..."
-                />
-                {errors.recommendations && <p className="mt-1 text-sm text-red-600">{errors.recommendations}</p>}
-              </div>
-
-              <div className="flex justify-end space-x-3 pt-4">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="btn-secondary"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="btn-primary"
-                >
-                  {loading ? 'Creating...' : 'Create Report'}
-                </button>
               </div>
             </form>
           </div>

@@ -45,11 +45,34 @@ export interface InspectionReport {
   rooferId: string;
   customer: Customer;
   address: string;
+  contactPerson: string;
+  phone: string;
+  email: string;
+  agritectumContact: string;
+  agritectumPhone: string;
+  agritectumEmail: string;
   roofType: string;
+  roofArea: number;
+  roofAge?: string;
+  accessConditions: string;
+  fallProtection: boolean;
+  technicalExecution: string;
+  drainage: string;
+  edges: string;
+  skylights: string;
+  technicalInstallations: string;
+  insulationType: string;
+  greenRoof: boolean;
+  solarPanels: boolean;
+  solarPanelsDescription?: string;
+  noxReduction: boolean;
+  rainwaterCollection: boolean;
+  recreationalAreas: boolean;
   status: 'DRAFT' | 'IN_PROGRESS' | 'COMPLETED' | 'APPROVED';
   findings: string;
   recommendations: string;
   photos: string[];
+  economicAssessment?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -93,10 +116,33 @@ export interface ApiToken {
 export interface InspectionReportInput {
   customer: Omit<Customer, 'id'>;
   address: string;
+  contactPerson: string;
+  phone: string;
+  email: string;
+  agritectumContact: string;
+  agritectumPhone: string;
+  agritectumEmail: string;
   roofType: string;
+  roofArea: number;
+  roofAge?: string;
+  accessConditions: string;
+  fallProtection: boolean;
+  technicalExecution: string;
+  drainage: string;
+  edges: string;
+  skylights: string;
+  technicalInstallations: string;
+  insulationType: string;
+  greenRoof: boolean;
+  solarPanels: boolean;
+  solarPanelsDescription?: string;
+  noxReduction: boolean;
+  rainwaterCollection: boolean;
+  recreationalAreas: boolean;
   findings: string;
   recommendations: string;
   photos: string[];
+  economicAssessment?: string;
 }
 
 export interface QuoteInput {
